@@ -44,12 +44,12 @@ ds = TabularDatasetFactory.from_delimited_files("https://automlsamplenotebookdat
 x, y = clean_data(ds)
 
 # TODO: Split data into train and test sets.
-x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8)
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.6)
 
 print('x_train:', x_train.shape, 'x_test:', x_test.shape, 'y_train:', y_train.shape, 'y_test:', y_test.shape)
 
-#-------------------------------------------------------------------
-   
+# -------------------------------------------------------------------
+
 run = Run.get_context()
 
 def main():
@@ -68,8 +68,9 @@ def main():
 
     accuracy = model.score(x_test, y_test)
     run.log("Accuracy", np.float(accuracy))
-
-    joblib.dump(model, 'hyperdrive_model.joblib')
+    
+    os.makedirs('outputs', exist_ok=True)
+    joblib.dump(model, 'outputs/hyperdrive_model.joblib')
 
 if __name__ == '__main__':
     print('train.py running')
