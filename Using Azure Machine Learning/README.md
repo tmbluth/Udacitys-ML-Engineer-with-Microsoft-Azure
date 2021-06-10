@@ -32,7 +32,8 @@ This checks each iteration of a training algorithm to see if there had been a de
 The AutoML model training code was run in the notebook instead of mostly from the training script. There weren't a lot of controls I put on it aside from defining the evaluation metric and training guardrails. I did have to clean the data with a function from the training script and save the cleaned data into a new TabularDataset so that it could be used by AutoML, but other than that, the code was not too complex.
 
 As mentioned above the AutoML run found a VotingEnsemble that beat out all other models. The hyperparameters it landed on were as follows:
-    "param_kwargs": {
+    
+    {
         "boosting_type": "gbdt",
         "colsample_bytree": 0.6933333333333332,
         "learning_rate": 0.05263631578947369,
