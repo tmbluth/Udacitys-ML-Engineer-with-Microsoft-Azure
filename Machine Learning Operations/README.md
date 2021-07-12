@@ -54,7 +54,7 @@ First in Swagger:
 
 Then to test if the endpoint was working test data was sent to the endpoint which returned with this output confirming it worked 
 
-<img width="289" alt="endpoint_success" src="https://user-images.githubusercontent.com/19579908/125130276-f643a080-e0bd-11eb-98d8-ccdad3566b20.PNG">
+<img width="170" alt="endpoint_success" src="https://user-images.githubusercontent.com/19579908/125344657-cf32dc00-e314-11eb-883d-56a0c10c7bed.PNG">
 
 
 ### Step 4: Automate Pipeline
@@ -72,13 +72,14 @@ Also, when you click into the pipeline run you can see it in the "Designer"
 <img width="207" alt="pipeline_designer" src="https://user-images.githubusercontent.com/19579908/125311874-fe375680-e2f0-11eb-9857-0dcdd7daeb6f.PNG">
 
 #### Pipeline API Endpoint
+
 Then the pipeline was published and the endpoint details can be found here:
 
 <img width="496" alt="endpoint_published" src="https://user-images.githubusercontent.com/19579908/125312644-b402a500-e2f1-11eb-8ccf-df177d0413ab.PNG">
 
 
 ## Screencast
-A quick visual walkthrough of the working endpoints can be seen here: https://youtu.be/Ns1OKwm_YyE
+A quick visual walkthrough of the working endpoints can be seen here: https://vimeo.com/574131393/d3b46d70a1
 
 ## Improvements
 If I were to spend more time on this project and not merely prove out a concept I would set up model performance reporting around it. I'd be curious how the model performed over time and would want to see if data drift or model drift creeps in. I'd also spend more time doing custom modeling beyond what AutoML did to see if the model is optimal before deploying it.
