@@ -8,7 +8,7 @@ By training models on this data set using AutoML the modeling work was taken car
 
 ## Architecture Diagram
 
-(TBD)
+![AML Engineer Udacity Project 2 Diagram](https://user-images.githubusercontent.com/19579908/125333652-ba038080-e307-11eb-8283-dcfc1945c305.png)
 
 
 ## Walkthrough
@@ -24,6 +24,7 @@ I was able to load in the cleaned bank market data set from the internet and run
 
 #### AutoML Experiment Run
 This is the completed experiment:
+
 <img width="668" alt="experiment_complete" src="https://user-images.githubusercontent.com/19579908/125303862-5ae34300-e2ea-11eb-8804-674e3803f343.PNG">
 
 #### Best Model
@@ -39,31 +40,40 @@ Now that AutoML had evaluated several models the best model was chosen and deplo
 
 #### Turn on Application Insights
 This endpoint then had application insights turned on so that appropriate endpoint logging could occur to alert me should the endpoint fail.
+
 <img width="452" alt="logs" src="https://user-images.githubusercontent.com/19579908/125304299-b44b7200-e2ea-11eb-996b-a82d9ebd4bdc.PNG">
+
 Here is an example of what is logged by default:
+
 <img width="396" alt="app_insights" src="https://user-images.githubusercontent.com/19579908/125130530-618d7280-e0be-11eb-875a-c271c54b1bdb.PNG">
 
 #### Test Deployed Model Endpoint
 First in Swagger:
+
 <img width="806" alt="bankmarketing_swagger_ui_endpoint" src="https://user-images.githubusercontent.com/19579908/125319819-5756b880-e2f8-11eb-85dc-9145226351a4.PNG">
 
 Then to test if the endpoint was working test data was sent to the endpoint which returned with this output confirming it worked 
+
 <img width="289" alt="endpoint_success" src="https://user-images.githubusercontent.com/19579908/125130276-f643a080-e0bd-11eb-98d8-ccdad3566b20.PNG">
 
 
 ### Step 4: Automate Pipeline
 Unfortunately a lot of this was done in the Azure ML UI which means it's not very scalable or automated. To better automate this process I created a pipeline endpoint using the Azure ML SDK. I also created a pipeline to feed the endpoint. What resulted was a pipeline of steps that takes in new cleaned data, trains a model with it, and deploys the model. 
 
-#### Pipeline Runs
-The pipeline creation can be seen here in the pipeline and experiment tabs:
+#### Pipeline Run
+The pipeline creation can be seen here in the notebook and the "Pipeline" and "Experiment" tabs:
+
+<img width="344" alt="pipeline_REST_endpoint" src="https://user-images.githubusercontent.com/19579908/125131152-80403900-e0bf-11eb-8dab-b9f50055ab32.PNG">
 <img width="777" alt="pipelines" src="https://user-images.githubusercontent.com/19579908/125311745-e1028800-e2f0-11eb-9a63-d48be4342de6.PNG">
 <img width="566" alt="pipeline_experiment" src="https://user-images.githubusercontent.com/19579908/125314891-d85f8100-e2f3-11eb-9202-52f5ed1fb3dc.PNG">
 
+Also, when you click into the pipeline run you can see it in the "Designer"
+
+<img width="207" alt="pipeline_designer" src="https://user-images.githubusercontent.com/19579908/125311874-fe375680-e2f0-11eb-9857-0dcdd7daeb6f.PNG">
 
 #### Pipeline API Endpoint
 Then the pipeline was published and the endpoint details can be found here:
-<img width="344" alt="pipeline_REST_endpoint" src="https://user-images.githubusercontent.com/19579908/125131152-80403900-e0bf-11eb-8dab-b9f50055ab32.PNG">
-<img width="207" alt="pipeline_designer" src="https://user-images.githubusercontent.com/19579908/125311874-fe375680-e2f0-11eb-9857-0dcdd7daeb6f.PNG">
+
 <img width="496" alt="endpoint_published" src="https://user-images.githubusercontent.com/19579908/125312644-b402a500-e2f1-11eb-8ccf-df177d0413ab.PNG">
 
 
