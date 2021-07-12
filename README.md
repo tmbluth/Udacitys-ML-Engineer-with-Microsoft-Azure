@@ -27,7 +27,7 @@ This endpoint then had application insights turned on so that appropriate endpoi
 
 To test if the endpoint was working example test data was sent to the endpoint which returned with this output confirming it worked 
 
-<img width="289" alt="endpoint_success" src="https://user-images.githubusercontent.com/19579908/125130276-f643a080-e0bd-11eb-98d8-ccdad3566b20.PNG">
+<img width="170" alt="endpoint_success" src="https://user-images.githubusercontent.com/19579908/125344488-9d217a00-e314-11eb-8bfb-968737b7e996.PNG">
 
 Unfortunately a lot of this was done in the Azure ML UI which means it's not very scalable or automated. To better automate this process I created the same pipeline using the Azure ML SDK. 
 
@@ -39,7 +39,7 @@ The final result being this:
 
 ### Screencast
 
-A quick visual walkthrough of the working endpoints can be seen here: https://youtu.be/Ns1OKwm_YyE
+A quick visual walkthrough of the working endpoints can be seen here: https://vimeo.com/574131393/d3b46d70a1
 
 ### Improvements
 
