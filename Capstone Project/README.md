@@ -32,7 +32,6 @@ Model Accuracy:
 I chose a `normalized_root_mean_squared_error` (normalized RMSE) as the primary evaluation metric for the models to compete on. Regular RMSE gives an accurate representation of how far off the predictions are in either direction from the true price. That value is then normalized to account for any scaling discrepancies between modeling algorithms. This normalization will allow AutoML to compare all models apples to apples and pick the best model. This metric was calculated setting `validation_data` to our validation dataset to evaluate out-of-time data instead of random time periods within the trainig dataset. I also turned on `featurization` to `auto` which takes longer but could be important in automatically creating training features that would boost model performance.
 
 ### Results
-*TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
 
 The range in performance varied pretty widely but the best model had performance of 5.64% MAPE with the validation set. The best model was a VotingEnsemble made up of 8 different models that were elastic nets and tree based algorithms. I could've improved this model by finding more rich features, but overall I think it did pretty well. Here is a screenshot of the completed run and the ensemble details.
 
@@ -45,7 +44,6 @@ The range in performance varied pretty widely but the best model had performance
 Instead of traditional forecasting methods I decided to use a multivariable LSTM approach that predicted one time series ahead. This was done since LSTM is a leading algorithm in forecasting problems. The parameters I optimized were dropout, learning rate, and hidden neuron count. The details of these hyperparameters are found in the `hyperparameter_tuning.ipynb` notebook. 
 
 ### Results
-*TODO*: What are the results you got with your model? What were the parameters of the model? How could you have improved it?
 
 This model actually did better than the AutoML model on the validation set with a MAPE of 2.97%. It had a learning rate of 0.072, a dropout of 0.158 on 2 layers and 2 LSTM layers with 32 and 16 neurons respectively. The only problem was the test set performance. Since the last 10% of the data captured a major bull run follow by a crash all models trained had a very hard time predicting the prices. The best HyperDrive model got an 18% MAPE which I personally think is unusable in the real world. This may be fixed by including the volatility that the test set displayed in the next training data sset and collecting more recent tame data for testing.
 
