@@ -1,5 +1,3 @@
-*NOTE:* This file is a template that you can use to create the README for your project. The *TODO* comments below will highlight the information you should be sure to include.
-
 # Ethereum Forecaster
 
 This year was a very exciting time for cryptocurrency. In late 2020 it began to boom once more and reached historical highs in the spring of 2021. During the middle part of the boom I jumped into the market and have learned a lot about how cryptocurrency works from a technology perspective and from a trading perspective. In this project I hope to take some of my learnings and see what might happen if I had applied them in the past.
@@ -13,7 +11,6 @@ To complete this project I used a work subscription to Azure which had Azure Blo
 
 ### Overview
 The data sets I'll be working with are from Kaggle and contain time-series price data on popular cryptocurrencies from their Initial Coin Offering (ICO) to July 2021. 
-
 
 If this is true, using daily Bitcoin data should be a good signal for Ethereum's daily closing price. 
 
@@ -35,9 +32,12 @@ I chose a `normalized_root_mean_squared_error` (normalized RMSE) as the primary 
 ### Results
 *TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
 
-The range in performance varied pretty widely but the best model had performance of $14.65 RMSE in the validation set.
+The range in performance varied pretty widely but the best model had performance of 5.64% MAPE with the validation set. The best model was a VotingEnsemble made up of 8 different models that were elastic nets and tree based algorithms. I could've improved this model by finding more rich features, but overall I think it did pretty well. Here is a screenshot of the completed run and the ensemble details.
 
-*TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
+<img width="458" alt="AutoMLPipelineRunDetail" src="https://user-images.githubusercontent.com/19579908/129660168-dba0cf2e-097c-4a6f-82c0-661845f550e9.PNG">
+
+<img width="314" alt="AutoMLVotingEnsemble" src="https://user-images.githubusercontent.com/19579908/129660184-c0110e5b-e236-4d3c-af54-d74f5228d177.PNG">
+
 
 ## Hyperparameter Tuning
 Instead of traditional forecasting methods I decided to use a multivariable LSTM approach that predicted one time series ahead. This was done since LSTM is a leading algorithm in forecasting problems. The parameters I optimized were dropout, learning rate, and hidden neuron count. The details of these hyperparameters are found in the `hyperparameter_tuning.ipynb` notebook. 
@@ -45,18 +45,19 @@ Instead of traditional forecasting methods I decided to use a multivariable LSTM
 ### Results
 *TODO*: What are the results you got with your model? What were the parameters of the model? How could you have improved it?
 
-*TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
+This model actually did better than the AutoML model on the validation set with a MAPE of 2.97%. It had a learning rate of 0.072, a dropout of 0.158 on 2 layers and 2 LSTM layers with 32 and 16 neurons respectively. The only problem was the test set performance. Since the last 10% of the data captured a major bull run follow by a crash all models trained had a very hard time predicting the prices. The best HyperDrive model got an 18% MAPE which I personally think is unusable in the real world. This may be fixed by including the volatility that the test set displayed in the next training data sset and collecting more recent tame data for testing.
 
+The best model run and details can be seen below.
 
+<img width="746" alt="HyperDriveRunDetail" src="https://user-images.githubusercontent.com/19579908/129660816-9a6dcc1f-bc6e-4a2c-b15b-9b9c0b601ab2.PNG">
+
+<img width="921" alt="HyperDriveModel" src="https://user-images.githubusercontent.com/19579908/129660899-85257584-b401-4844-9c6e-d4d1c81737e9.PNG">
 
 ## Model Deployment
 I chose to deploy the hyperparameter model because I wanted experience deploying a deep learning algorithm into production. The deployed model is packaged using Docker and saved in an Azure Container Instance. It was then deployed to a webservice with 2 nodes of compute and 1GB of memory. To hit the endpoint you must send a 16 column numpy array of the scaled input data. It will return the scaled predictions back to you which can then be unscaled using the saved scaler object in the notebook. All of this is shown in the notebook by using Webservice.run() and providing the correct data.
 
 ## Screen Recording
-*TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
-- A working model
-- Demo of the deployed  model
-- Demo of a sample request sent to the endpoint and its response
+https://vimeo.com/588157040/59a742eb0d
 
 ## Standout Suggestions
 I was unable to change the development environment's Python libraries since it came prepackaged to run AutoML. Messing with libraries would make AutoML unusable in many cases. This also made loading Tensorflow models impossible in the workspace since the dev environment was different than the training environment that needed specific versions of Tensorflow to work correctly.
