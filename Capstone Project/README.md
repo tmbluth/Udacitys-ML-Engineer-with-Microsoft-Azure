@@ -4,8 +4,10 @@ This year was a very exciting time for cryptocurrency. In late 2020 it began to 
 
 Given the current economy of cryptocurrency is largely driven by Bitcoin I am using it as a leading signal for the price of alternative coins. In this case, specifically one of my current favorites, Ethereum. 
 
+
+
 ## Project Set Up and Installation
-To complete this project I used a work subscription to Azure which had Azure Blob Storage set up already. Before being able to run this code yourself you will need to have an Azure subscription and blob storage established. You will also need to download the data using the Kaggle API which I walk though in my notebooks. 
+To complete this project I used a work subscription to Azure which had Azure Blob Storage set up already. Before being able to run this code yourself you will need to have an Azure subscription and blob storage established. You will also need to download the data using the Kaggle API which I walk though in my notebooks. Just to be clear, the main files in this project are `automl.ipynb` and `hyperparameter_tuning.ipynb`. The rest of the files are created from within these 2 files as you will see when you walk through them.
 
 ## Dataset
 
@@ -60,4 +62,7 @@ I chose to deploy the hyperparameter model because I wanted experience deploying
 https://vimeo.com/588157040/59a742eb0d
 
 ## Standout Suggestions
-I was unable to change the development environment's Python libraries since it came prepackaged to run AutoML. Messing with libraries would make AutoML unusable in many cases. This also made loading Tensorflow models impossible in the workspace since the dev environment was different than the training environment that needed specific versions of Tensorflow to work correctly.
+Instead of just deploying the best model to a single endpoint I chose to do a little exploration and prove out many different tools Azure has to offer. The AutoML notebook not only uses AutoML but also creates a batch pipeline that utilizes the AutoML model. In the HyperDrive script I explored deployment of a real-time scoring option by deploying a webservice to be hit at any time, given you have the correct access keys and URL. Both of these approaches cover very different AzureML functionality for the same use case and either can be used.
+
+## Heads Up
+If you try to run this code be aware that changing the development environment's Python libraries is extremely difficult and risky. This is because it comes prepackaged to run AutoML. Messing with libraries would make AutoML unusable in many cases. This also made loading Tensorflow models impossible in the workspace since the dev environment was different than the training environment that needed specific versions of Tensorflow to work correctly.
