@@ -1,3 +1,4 @@
+
 import argparse
 import json
 import os
@@ -16,16 +17,6 @@ from azureml.core import Dataset
 from azureml.core.workspace import Workspace
 import tensorflow
 print('\nTensorflow version:', tensorflow.__version__)
-
-def dnn_prep(df):
-    target_col = ['Close_ETH']
-    df = df[[c for c in df if c not in target_col] + target_col]
-    values = df.values.astype('float32')
-    scaler = MinMaxScaler(feature_range=(0, 1))
-    scaled = scaler.fit_transform(values)
-    X, y = scaled[:, :-1], scaled[:, -1]
-    X = X.reshape(X.shape[0], 1, X.shape[1])
-    return X, y, scaler
 
 class LogRunMetrics(Callback):
     # callback at the end of every epoch
@@ -51,10 +42,10 @@ input_data = args.input_data
 # Use current workspace 
 ws = run.experiment.workspace
 
-# get the input dataset by ID
+# Get the input dataset by ID
 dataset = Dataset.get_by_id(ws, id=args.input_data)
 
-# load the TabularDataset to pandas DataFrame
+# Load the TabularDataset to pandas DataFrame
 crypto = dataset.to_pandas_dataframe()
 
 crypto.set_index('Date', inplace=True, drop=True)
@@ -108,7 +99,7 @@ model.add(Dropout(args.dropout))
 model.add(Dense(1))
 
 # Compile the model
-model.compile(optimizer='adam', loss='mse', metrics=[RootMeanSquaredError(), 'mae', 'mape'])
+model.compile(optimizer='adam', loss='mse', metrics=[RootMeanSquaredError(), 'mape', 'mae'])
 model.summary()
 
 history = model.fit(
@@ -119,31 +110,39 @@ history = model.fit(
     callbacks=[LogRunMetrics()]
 )
 
-print(history)
+print(history.history)
 
 score = model.evaluate(X_val, y_val, verbose=0)
-rmse = score[0]
+
+mse = score[0]
+print('Mean Squared Error:', mse)
+run.log('Mean Absolute Error', np.float(mse))
+
+rmse = score[1]
 print('Root Mean Squared Error:', rmse)
 run.log('Root Mean Squared Error', np.float(rmse))
-mae = score[1]
-print('Mean Absolute Error:', mae)
-run.log('Mean Absolute Error', np.float(mae))
+
 mape = score[2]
 print('Mean Absolute Percentage Error:', mape)
 run.log('Mean Absolute Percentage Error', np.float(mape))
 
+mae = score[3]
+print('Mean Absolute Error:', mae)
+run.log('Mean Absolute Error', np.float(mae))
+
+
 plt.figure(figsize=(6, 3))
-plt.title('ETH RMSE: Train vs Validation Data', fontsize=14)
-plt.plot(history.history['root_mean_squared_error'], 'b--', label='Train RMSE', lw=4, alpha=0.5)
-plt.plot(history.history['val_root_mean_squared_error'], 'r--', label='Val RMSE', lw=4, alpha=0.5)
+plt.title('ETH Model Epochs: Train vs Validation Data', fontsize=14)
+plt.plot(history.history['loss'], 'b', label='Train MAE', lw=4, alpha=0.5)
+plt.plot(history.history['val_loss'], 'r', label='Val MAE', lw=4, alpha=0.5)
 plt.legend(fontsize=12)
 plt.grid(True)
 
-# log an image
+# Log an image
 run.log_image('ETH_keras', plot=plt)
 
-# create a ./outputs folder in the compute target
-# files saved in the "./outputs" folder are automatically uploaded into run history
+# Create a ./outputs folder in the compute target
+# Files saved in the "./outputs" folder are automatically uploaded into run history
 os.makedirs('./outputs', exist_ok=True)
 
 joblib.dump(scaler, './outputs/scaler.joblib')
@@ -154,20 +153,17 @@ np.save('./outputs/y_train.npy', y_train)
 np.save('./outputs/X_test.npy', X_test)
 np.save('./outputs/y_test.npy', y_test)
 
-model.save('./outputs/ETH_hyperdrive_model') # new way to save and load models
-model.save('./outputs/ETH_hyperdrive_model.h5') # old way using hdf5
+model.save('./outputs/ETH_hyperdrive_model',save_format='tf') # new way to save and load models by creating a model folder where all model info is saved
+model.save('./outputs/ETH_hyperdrive_model.h5',save_format='h5') # old way using a hdf5 file
 
+print("Whole model saved in ./outputs folder")
 
-
-
+# # Alternate way to save and load models
 # # serialize NN architecture to JSON
 # model_json = model.to_json()
 # # save model JSON
 # with open('./outputs/model.json', 'w') as f:
 #     f.write(model_json)
 # # save model weights
-# model.save_weights('./outputs/ETH_hyperdrive_model.h5')
-print("model saved in ./outputs folder")
-
-
-
+# model.save_weights('./outputs/model.h5')
+# print("model weights and architecture saved in ./outputs folder")
