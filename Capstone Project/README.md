@@ -37,8 +37,28 @@ The range in performance varied pretty widely but the best model had performance
 
 <img width="458" alt="AutoMLPipelineRunDetail" src="https://user-images.githubusercontent.com/19579908/129660168-dba0cf2e-097c-4a6f-82c0-661845f550e9.PNG">
 
+<img width="497" alt="BestAutoMLModelRun" src="https://user-images.githubusercontent.com/19579908/129766277-e9a5b8ed-87bf-4f41-8493-30a9fcaf2c7d.PNG">
+
 <img width="314" alt="AutoMLVotingEnsemble" src="https://user-images.githubusercontent.com/19579908/129660184-c0110e5b-e236-4d3c-af54-d74f5228d177.PNG">
 
+I registered the model from the PipelineRun with the following code:
+
+```
+best_model_output_name='best_model_output'
+best_model_output = run.get_pipeline_output(best_model_output_name)
+best_model_output.download('./automl_model', show_progress=True)
+
+model_path = './automl_model/' + str(best_model_output._path_on_datastore)
+with open(model_path, "rb" ) as f:
+    best_model = joblib.load(f)
+
+run.upload_file(name=model_path, path_or_stream=model_path)
+run.register_model(
+    model_name = 'automl_Ethereum_forecaster', 
+    model_path = model_path,
+    description = 'Auto ML training',
+    tags=None)
+```
 
 ## Hyperparameter Tuning
 Instead of traditional forecasting methods I decided to use a multivariable LSTM approach that predicted one time series ahead. This was done since LSTM is a leading algorithm in forecasting problems. The parameters I optimized were dropout, learning rate, and hidden neuron count. The details of these hyperparameters are found in the `hyperparameter_tuning.ipynb` notebook. 
@@ -54,7 +74,18 @@ The best model run and details can be seen below.
 <img width="921" alt="HyperDriveModel" src="https://user-images.githubusercontent.com/19579908/129660899-85257584-b401-4844-9c6e-d4d1c81737e9.PNG">
 
 ## Model Deployment
-I chose to deploy the hyperparameter model because I wanted experience deploying a deep learning algorithm into production. The deployed model is packaged using Docker and saved in an Azure Container Instance. It was then deployed to a webservice with 2 nodes of compute and 1GB of memory. To hit the endpoint you must send a 16 column numpy array of the scaled input data. It will return the scaled predictions back to you which can then be unscaled using the saved scaler object in the notebook. All of this is shown in the notebook by using Webservice.run() and providing the correct data.
+I chose to deploy the hyperparameter model because I wanted experience deploying a deep learning algorithm into production. The deployed model is packaged using Docker and saved in an Azure Container Instance. It was then deployed to a webservice with 2 nodes of compute and 1GB of memory. The environment I used to deploy the endpoint is the same environment I used to train the model to ensure compatibility with model loading and data ingestion. This environment can be recreated by using the `dockerfile` in the repo, which is also created through the notebook.
+
+When the model was trained a MinMaxScaler (scikit-learn) was created on the training set and saved with the model run. If you want to feed the endpoint some data you must use this scaler on the 17 columns of Ethereum data (including the target feature "Close-ETH"), break out the 16 inputs, reshape them to be Keras compatible, and convert them into JSON. You send this data with the `Webservice.run()` method as seen below:
+
+<img width="308" alt="HyperDriveWebserviceRun" src="https://user-images.githubusercontent.com/19579908/129759858-1ec0e884-0421-40e9-99f2-e955289e4910.PNG">
+
+This is the endpoint I hit which should look similar if this code is run in a different workspace:
+
+<img width="486" alt="HyperDriveEndpoint" src="https://user-images.githubusercontent.com/19579908/129760159-a9e3bde1-187e-4d14-bd70-4fafd8785708.PNG">
+
+Once you get a response you can download this scaler and bring the predictions back to their original form with the `inverse_transform()` method of the scaler.
+
 
 ## Screen Recording
 https://vimeo.com/588157040/59a742eb0d
