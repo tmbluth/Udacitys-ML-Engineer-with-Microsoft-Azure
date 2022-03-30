@@ -5,16 +5,14 @@ This year was a very exciting time for cryptocurrency. In late 2020 it began to 
 Given the current economy of cryptocurrency is largely driven by Bitcoin I am using it as a leading signal for the price of alternative coins. In this case, specifically one of my current favorites, Ethereum. 
 
 
-
 ## Project Set Up and Installation
-To complete this project I used a work subscription to Azure which had Azure Blob Storage set up already. Before being able to run this code yourself you will need to have an Azure subscription and blob storage established. You will also need to download the data using the Kaggle API which I walk though in my notebooks. Just to be clear, the main files in this project are `automl.ipynb` and `hyperparameter_tuning.ipynb`. The rest of the files are created from within these 2 files as you will see when you walk through them.
+Before being able to run this code yourself you will need to have an Azure subscription and blob storage established. You will also need to download the data using the Kaggle API which I walk though in my notebooks. Just to be clear, the main files in this project are `automl.ipynb` and `hyperparameter_tuning.ipynb`. The rest of the files are created from within these 2 files as you will see when you walk through them.
 
 ## Dataset
 
 ### Overview
 The data sets I'll be working with are from Kaggle and contain time-series price data on popular cryptocurrencies from their Initial Coin Offering (ICO) to July 2021. 
 
-If this is true, using daily Bitcoin data should be a good signal for Ethereum's daily closing price. 
 
 ### Task
 For this project we will only be using historical info from Bitcoin (BTC) and Ethereum (ETH) to predict the closing price of Ethereum at each day's open. BTC has been known to be the market leader with a huge portion of market capitalization and tends to heavily influence the prices of alternative coins like ETH. Features like coin trading volume, market capitalization, highs, lows, moving averages, and standard deviations are all part of the time series inputs to our models.
@@ -30,6 +28,8 @@ I chose the run time to not exceed 4 hours by changing `experiment_timeout_hours
 
 Model Accuracy:
 I chose a `normalized_root_mean_squared_error` (normalized RMSE) as the primary evaluation metric for the models to compete on. Regular RMSE gives an accurate representation of how far off the predictions are in either direction from the true price. That value is then normalized to account for any scaling discrepancies between modeling algorithms. This normalization will allow AutoML to compare all models apples to apples and pick the best model. This metric was calculated setting `validation_data` to our validation dataset to evaluate out-of-time data instead of random time periods within the trainig dataset. I also turned on `featurization` to `auto` which takes longer but could be important in automatically creating training features that would boost model performance.
+
+Instead of deploying this model to an endpoint I used pipeline batch scoring to be able to compare it to endpoint deployment.
 
 ### Results
 
@@ -61,10 +61,9 @@ run.register_model(
 ```
 
 ## Hyperparameter Tuning
-Instead of traditional forecasting methods I decided to use a multivariable LSTM approach that predicted one time series ahead. This was done since LSTM is a leading algorithm in forecasting problems. The parameters I optimized were dropout, learning rate, and hidden neuron count. The details of these hyperparameters are found in the `hyperparameter_tuning.ipynb` notebook. 
+Instead of traditional forecasting methods I decided to use a multivariable LSTM approach that predicted one time period ahead. This was done since LSTM is a leading algorithm in forecasting problems. The parameters I optimized were dropout, learning rate, and hidden neuron count. The details of these hyperparameters are found in the `hyperparameter_tuning.ipynb` notebook. 
 
 ### Results
-
 This model actually did better than the AutoML model on the validation set with a MAPE of 2.97%. It had a learning rate of 0.072, a dropout of 0.158 on 2 layers and 2 LSTM layers with 32 and 16 neurons respectively. The only problem was the test set performance. Since the last 10% of the data captured a major bull run follow by a crash all models trained had a very hard time predicting the prices. The best HyperDrive model got an 18% MAPE which I personally think is unusable in the real world. This may be fixed by including the volatility that the test set displayed in the next training data set and collecting more recent tame data for testing.
 
 The best model run and details can be seen below.
@@ -90,8 +89,5 @@ Once you get a response you can download this scaler and bring the predictions b
 ## Screen Recording
 https://vimeo.com/588157040/59a742eb0d
 
-## Standout Suggestions
-Instead of just deploying the best model to a single endpoint I chose to do a little exploration and prove out many different tools Azure has to offer. The AutoML notebook not only uses AutoML but also creates a batch pipeline that utilizes the AutoML model. In the HyperDrive script I explored deployment of a real-time scoring option by deploying a webservice to be hit at any time, given you have the correct access keys and URL. Both of these approaches cover very different AzureML functionality for the same use case and either can be used.
-
 ## Heads Up
-If you try to run this code be aware that changing the development environment's Python libraries is extremely difficult and risky. This is because it comes prepackaged to run AutoML. Messing with libraries would make AutoML unusable in many cases. This also made loading Tensorflow models impossible in the workspace since the dev environment was different than the training environment that needed specific versions of Tensorflow to work correctly.
+If you try to run this code be aware that changing the development environment's Python libraries is extremely difficult and risky. This is because it comes prepackaged to run AutoML. Messing with libraries would make AutoML unusable in many cases. This also made loading Tensorflow models impossible in the workspace since the dev environment was different than the cloud training environment that needed specific versions of Tensorflow to work correctly.
